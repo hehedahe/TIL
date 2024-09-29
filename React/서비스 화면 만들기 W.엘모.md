@@ -104,3 +104,26 @@ export default function handler(req, res) {
 
 ```
 
+### 3) 실제 페이지
+> /src/pages/services/`index.page.jsx`
+
+#### (1) index.page.jsx의 기본 와꾸를 만든다.
+**기본와꾸**
+``` jsx
+// 서버에서 실행되는 코드
+export const getServerSideProps = async () => {
+	return {
+		props: {},
+	};
+};
+
+// 클라이언트에서 실행되는 코드
+const Page = () => {
+	return <div>서비스 페이지</div>;
+};
+
+export default Page;
+
+```
+
+#### (2) SSR 
