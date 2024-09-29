@@ -55,6 +55,52 @@ export const recoilHydrator = (initialData, setter) => {
 ```
 
 
-### 2) 
+### 2) 목없API
+> src/pages/api/v1/services/`index.api.js`
 
+faker 
+``` js
+import { faker } from '@faker-js/faker';
+
+export default function handler(req, res) {
+  ...
+  const getItem = index => {
+    // 실제 뿌려지는 데이터
+	return {
+      id: faker.string.alpha(12),
+      type: faker.helpers.arrayElement([
+        'NURSING',
+        'RECOGNITION',
+        'RECUPERATION',
+        'LEISURE',
+        'EMOTION',
+        'FAMILY',
+      ]),
+      title: faker.word.noun(),
+      content: faker.commerce.productDescription(),
+      regDate: faker.date.anytime(),
+      order: index + 1,
+    };
+  };
+  
+  switch (req.method) {
+    case 'GET':
+      return res.status(200).json({
+        data: {
+          total,
+          count: 0,
+          limit: nLimit,
+          offset: nOffset,
+          items: Array.from(
+            Array(total - nOffset > nLimit ? nLimit : total - nOffset),
+          ).map((_, index) => getItem(index)),
+        },
+      });
+
+    default:
+      throw new Error('no supported method');
+  }
+}
+
+```
 
