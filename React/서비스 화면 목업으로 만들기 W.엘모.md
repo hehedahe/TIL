@@ -125,6 +125,7 @@ export default Page;
 ```
 
 #### (2) SSR에서 API 호출해본다.
+
 ``` jsx
 // 서버에서 실행되는 코드
 export const getServerSideProps = async () => {
@@ -161,3 +162,19 @@ export default Page;
 
 
 ### 4) 서비스 항목별 페이지
+제공하는 서비스가 여러 종류가 있고, 각 서비스 페이지를 똑같은 화면으로 만들어야 한다.
+
+
+```
+src
+ㄴ pages
+	ㄴ services
+		ㄴ nursing
+		ㄴ recognition
+		ㄴ recuperation
+		ㄴ leisure
+		ㄴ emotion
+		ㄴ family
+			ㄴ `index.page.jsx`
+	ㄴ `_app.pages.jsx`
+```
