@@ -40,62 +40,65 @@ const Page = () => {
 화장실에서 큰일을 보고 있다, 휴지가 없다 → 휴지 좀 가져와 요청을 한다 → 화장실 밖으로 나가 티비를 본다 → 밥도 먹는다 → 휴지가 도착했다 → 닦는다
 
 이렇게 동기와 비동기의 차이는 서버와 API 통신 중 다른 과정을 수행할 수 있느냐 없느냐의 차이인데,
-그동안 스피너, 마우스 움직이는 것, 타이핑 가능한 것 모두 서버의 resp가 올 때까지 기다리는 동안 발생하는 이벤트이므로 비동기이다.
-// async 붙는 이유? async === 비동기
+그동안 스피너, 마우스 무빙, 타이핑 모두 서버의 resp가 올 때까지 기다리는 동안 발생하는 이벤트이므로 비동기이다.
+
+getProgramData에 async가 붙는 이유는 비동기 통신을 위해서이다.
+
+## 2) `await`
+
+fetch 함수에 `await`을 사용하는 이뉴는 비동기 요청 시, 순서를 보장하기 위함이다.
 # 2. useEffect 사용하기
+
+useEffect는 브라우저에서 렌더링된 이후 시점에 실행되기 때문에 서버에서 실행할 수 없어 CSR에서 데이터를 불러오기 위해 사용되는 훅이다.
+
+**src/pages/services/\[type\]/`index.page.jsx`**
 ``` jsx
 ...
 
 // 클라이언트에서 실행되는 코드
 const Page = () => {
 	const getProgramData = async () => {
-		const response = await findServices();
+		const response = await findServices(); // 비동기 함수의 결과값이 atom 값에 들어감 === atom 값이 바뀐다. === 리렌더링
 	}
 	
 	useEffect(() => {
-		getProgramData();
+		getProgramData(); // 리랜더링될 때마다 서버 API를 호출하지 않기 위해 의존성배열을 빈 배열로 한다.
 	}, [])
 	
 	return <div>서비스 페이지</div>;
 }
 ```
 
+## 1) 의존성 배열
 
+의존성 배열: 어떤 값이 바뀌었을 때, `useEffect`를 다시 실행되게 하는 배열
+
+`useEffect`의 두번째 파라미터에는 의존성 배열을 넣을 수 있는데, 3가지 방법이 있다.
+### (1) 빈 배열
+처음 렌더링 이후 딱 한 번만 실행된다.
 ``` jsx
-
-// 클라이언트에서 실행되는 코드
-const Page = () => {
-  // useEffect 두번째 파마리터인 의존성 배열을 넣는 방법 3가지
-  // 의존성 배열: 어떤 값이 바뀌었을 때, useEffect를 다시 실행되게 하는 배열!
-  // 1) [] -> 처음 렌디링 이후 한번만 실행된다.
-  // useEffect(() => {
-  //   console.log('useEffect 안에서 실행되었습니다!!');
-  // }, []);
-  // 2) [어떤값] -> 어떤값이 바뀔 때마다 useEffect가 실행된다.
-  // useEffect(() => {
-  //   console.log('useEffect 안에서 실행되었습니다!!');
-  // }, [어떤값]);
-  // 3) 아무것도 안 넣기 -> 이러면 렌더링될 때마다 계속 실행된다.
-  // useEffect(() => {
-  //   console.log('useEffect 안에서 실행되었습니다!!');
-  // });
-
-  const getProgramData = async () => {
-    const response = await fineServies(); // 비동기 함수의 결과값이 atom 값에 들어감 === atom 값이 바뀐다. === 리렌더링
-    // await 사용 이유?
-    // => async 비동기 요청시, 순서를 보장하기 위함이다.
-  };
-
-  useEffect(() => {
-    getProgramData();
-  }, []); // 리랜더링될 때마다 서버 API를 호출하지 않기 위해 의존성배열을 빈 배열로 한다.
-
-  return <div>서비스 페이지</div>;
-};
-
-export default Page;
-
-// useEffect -> 브라우저에서 렌더링된 이후에 useEffect가 실행되기 때문에 서버에서 실행할 수 없어
-// 데이터는 useEffect가 불러오는데, 데이터가 없어 크롤링 챗봇이 데이터를 얻어갈 수 없다.
-
+useEffect(() => {
+	console.log('useEffect 안에서 실행되었습니닷!!);
+}, [])
 ```
+
+### (2) \[어떤값]
+어떤값이 바뀔 때마다 `useEffect`가 실행된다.
+``` jsx
+useEffect(() => {
+	console.log('useEffect 안에서 실행되었습니닷!!);
+}, [어떤값])
+```
+
+### (3) 아무것도 안 넣기
+렌더링될 때마다 계속 실행된다.
+``` jsx
+useEffect(() => {
+	console.log('useEffect 안에서 실행되었습니닷!!);
+})
+```
+
+
+> **SEO(Search Engine Optimization)과 SSR, CSR**
+> 
+> 브라우저에서 렌더링된 이후에 useEffect가 실행되기 때문에 서버에서 실행할 수 없다. CSR에서 데이터는 useEffect가 불러오는데, 크롤링 챗봇은 SSR에서 불러와진 데이터를 크롤링하기 때문에 CSR에서 useEffect로 불러온 데이터가 없어 CSR에서 호출한 데이터는 가져가지지 않는다.
