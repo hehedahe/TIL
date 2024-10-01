@@ -206,8 +206,9 @@ export default Page;
 
 #### (2) 폴더 하나, 파일 하나로 관리하기
 
-위에서는 서비스 유형마다 각각 서로 다른 폴더와 파일로 구분해서 생성했다.
-그런데 같은 화면과 같은 기능을 하는 페이지이고 페이지마다 유형, 즉 쿼리만 달라지기 때문에 이런 경우, 한 폴더와 `index.page.jsx`로 관리할 수 있다.
+서비스 화면은 `pages`폴더 아래 경로에 있는 `index.page.jsx`로 렌더링되기 때문에 위에서는 서비스 유형마다 각각 서로 다른 폴더와 파일로 구분해서 생성했다.
+유저들에게 보여지는 url은 `/services/nursing`, `services/recognition`, ... 등으로 보여진다.
+그런데 같은 화면과 같은 기능을 하는 페이지이고 페이지마다 유형, 즉 path만 달라지기 때문에 이런 경우, 한 폴더와 `index.page.jsx`로 관리할 수 있다.
 
 **AS-IS**
 ```
@@ -229,9 +230,9 @@ src
 	ㄴ `_app.pages.jsx`
 ```
 
-서비스 화면은 `pages`폴더 아래 경로에 있는 `index.page.jsx`로 렌더링된다.
-유저들에게 보여지는 url은 `/services/nursing`, `services/recognition`, ... 등으로 보여진다.
 서비스 유형이 `pathVariable`로 경로가 나뉘어지는 경우, 폴더명을 대괄호로 감싸면 위에서 여러개의 폴더와 파일로 관리되던 페이지가 아래 구조처럼  `[type]` 하나로 간단해진다.
+
+이는 **next.js**에서 제공하는 `dynamic routes` 를 이용하면 위에 설명한 것처럼 pathVariable로 입력한 값이 getServerSideProps의 디폴트 파라미터인 `data`의 `query`에 담긴다.
 
 **TO-BE**
 ```
@@ -246,7 +247,6 @@ src
 **`index.page.jsx`**
 ``` jsx
 import { useRecoilValue } from 'recoil';
-import styled from 'styled-components';
 
 import { servicesAtom } from '@modules/service/atom';
 import { findServices } from '@modules/service/fetch';
@@ -265,8 +265,7 @@ export const getServerSideProps = async data => {
       title: '서비스',
       type: type,
       initialData: {
-        // [servicesAtom.key]: services, // 전역 상태관리
-        [servicesAtom.key]: services, // 지역 상태관리
+        [servicesAtom.key]: services,
       },
     },
   };
@@ -275,32 +274,16 @@ export const getServerSideProps = async data => {
 // 클라이언트에서 실행되는 코드
 const Page = ({ type }) => {
   const services = useRecoilValue(servicesAtom);
-  console.log(services);
+  console.log('services >>>>> ', services);
 
   // type UI 분기처리
-  return (
-    <Wrapper>
-      <Content>{type} 페이지</Content>
-    </Wrapper>
+  return (<div>{type} 페이지</div>
   );
 };
 
 export default Page;
-
-const Wrapper = styled.div`
-  max-width: 1140px;
-  margin: 80px auto 120px;
-`;
-
-const Content = styled.div`
-  margin: 40px 0;
-`;
-
 ```
 
-next.js에서 제공하는 dynamic route를 이용하면 pathVariable로 입력한 값이 
-- [5] dynamic route
-
 참고
-dynamic route
+- [5] dynamic route
 https://nextjs.org/docs/pages/building-your-application/routing/dynamic-routes
