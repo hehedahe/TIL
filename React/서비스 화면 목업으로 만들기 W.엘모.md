@@ -252,8 +252,10 @@ import { findServices } from '@modules/service/fetch';
 
 // 서버에서 실행되는 코드
 export const getServerSideProps = async data => {
-  const { query } = data;
-  console.log('query >>>>> ', query);
+	const { query } = data;
+	console.log('query >>>>> ', query);
+
+	const 
 
   const services = await findServices({ ...query }); // 여기서 직접 보낼 필요가 없다.
 
@@ -278,3 +280,10 @@ const Page = ({ initialData }) => {
 
 export default Page;
 ```
+
+next.js에서 제공하는 dynamic route를 이용하면 pathVariable로 입력한 값이 
+- [5] dynamic route
+
+참고
+dynamic route
+https://nextjs.org/docs/pages/building-your-application/routing/dynamic-routes
