@@ -169,7 +169,7 @@ export default Page;
 `getServerSideProps` 에서 fetch할 때 query로 각 서비스 화면에 일치하는 서비스 유형`type`을 보내고,
 Page컴포넌트에서는 이 화면이 어떤 서비스 유형 화면인지 `<div>`에 나타낸다.
 
-**index.page.jsx**
+**`index.page.jsx`**
 ``` jsx
 import { useRecoilValue } from 'recoil';
 
@@ -206,8 +206,10 @@ export default Page;
 
 #### (2) 폴더 하나, 파일 하나로 관리하기
 
-서비스 항목마다 
- 
+위에서는 서비스 유형마다 각각 서로 다른 폴더와 파일로 구분해서 생성했다.
+그런데 같은 화면과 같은 기능을 하는 페이지이고 페이지마다 유형, 즉 쿼리만 달라지기 때문에 이런 경우, 한 폴더와 `index.page.jsx`로 관리할 수 있다.
+
+**AS-IS**
 ```
 src
 ㄴ pages
@@ -225,4 +227,55 @@ src
 		ㄴ family
 			ㄴ `index.page.jsx`
 	ㄴ `_app.pages.jsx`
+```
+
+서비스 화면은 `pages`폴더 아래 경로에 있는 `index.page.jsx`로 렌더링된다.
+유저들에게 보여지는 url은 `/services/nursing`, `services/recognition`, ... 등으로 보여진다.
+서비스 유형이 `pathVariable`로 경로가 나뉘어지는 경우, 폴더명을 대괄호로 감싸면 위에서 여러개의 폴더와 파일로 관리되던 페이지가 아래 구조처럼  `[type]` 하나로 간단해진다.
+
+**TO-BE**
+```
+src
+ㄴ pages
+	ㄴ services
+		ㄴ [type]
+			ㄴ `index.page.jsx`
+	ㄴ `_app.pages.jsx`
+```
+
+**`index.page.jsx`**
+``` jsx
+import { useRecoilValue } from 'recoil';
+
+import { servicesAtom } from '@modules/service/atom';
+import { findServices } from '@modules/service/fetch';
+
+// 서버에서 실행되는 코드
+export const getServerSideProps = async data => {
+  const { query } = data;
+  console.log('query >>>>> ', query);
+
+  const services = await findServices({ ...query });
+
+  return {
+    props: {
+      title: '서비스',
+      initialData: {
+        // [servicesAtom.key]: services, // 전역 상태관리
+        services, // 지역 상태관리
+      },
+    },
+  };
+};
+
+// 클라이언트에서 실행되는 코드
+const Page = ({ initialData }) => {
+  // const services = useRecoilValue(servicesAtom);
+
+  // type UI 분기처리
+  return <div>[type] 페이지</div>;
+};
+
+export default Page;
+
 ```
