@@ -255,7 +255,7 @@ export const getServerSideProps = async data => {
   const { query } = data;
   console.log('query >>>>> ', query);
 
-  const services = await findServices({ ...query });
+  const services = await findServices({ ...query }); // 여기서 직접 보낼 필요가 없다.
 
   return {
     props: {
@@ -277,7 +277,4 @@ const Page = ({ initialData }) => {
 };
 
 export default Page;
-
 ```
-
-ddd
