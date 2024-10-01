@@ -166,7 +166,7 @@ export default Page;
 그러면 이렇게 services 폴더 아래에 각 서비스 유형 폴더가 있고, 그 안에 실제 화면에 뿌려지는 `index.page.jsx` 파일이 있다.
 
 #### (1) 서비스 항목별 폴더 구분하기
-`getServerSideProps` 에서 fetch할 때 query로 각 서비스 화면에 일치하는 서비스 유형`type`을 보내고,
+`getServerSideProps` 에서 fetch할 때 path로 각 서비스 화면에 일치하는 서비스 유형`type`을 보내고,
 Page컴포넌트에서는 이 화면이 어떤 서비스 유형 화면인지 `<div>`에 나타낸다.
 
 **`index.page.jsx`**
