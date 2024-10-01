@@ -246,39 +246,56 @@ src
 **`index.page.jsx`**
 ``` jsx
 import { useRecoilValue } from 'recoil';
+import styled from 'styled-components';
 
 import { servicesAtom } from '@modules/service/atom';
 import { findServices } from '@modules/service/fetch';
 
 // 서버에서 실행되는 코드
 export const getServerSideProps = async data => {
-	const { query } = data;
-	console.log('query >>>>> ', query);
+  const { query } = data;
+  console.log('query >>>>> ', query);
 
-	const 
-
-  const services = await findServices({ ...query }); // 여기서 직접 보낼 필요가 없다.
+  const { type } = query;
+  console.log('type >>>>> ', type);
+  const services = await findServices({ ...query });
 
   return {
     props: {
       title: '서비스',
+      type: type,
       initialData: {
         // [servicesAtom.key]: services, // 전역 상태관리
-        services, // 지역 상태관리
+        [servicesAtom.key]: services, // 지역 상태관리
       },
     },
   };
 };
 
 // 클라이언트에서 실행되는 코드
-const Page = ({ initialData }) => {
-  // const services = useRecoilValue(servicesAtom);
+const Page = ({ type }) => {
+  const services = useRecoilValue(servicesAtom);
+  console.log(services);
 
   // type UI 분기처리
-  return <div>[type] 페이지</div>;
+  return (
+    <Wrapper>
+      <Content>{type} 페이지</Content>
+    </Wrapper>
+  );
 };
 
 export default Page;
+
+const Wrapper = styled.div`
+  max-width: 1140px;
+  margin: 80px auto 120px;
+`;
+
+const Content = styled.div`
+  margin: 40px 0;
+`;
+
 ```
 
 next.js에서 제공하는 dynamic route를 이용하면 pathVariable로 입력한 값이 
