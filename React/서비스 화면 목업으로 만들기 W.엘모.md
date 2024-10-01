@@ -163,17 +163,65 @@ export default Page;
 
 ### 4) 서비스 항목별 페이지
 제공하는 서비스가 여러 종류가 있고, 각 서비스 페이지를 똑같은 화면으로 만들어야 한다.
+그러면 이렇게 services 폴더 아래에 각 서비스 유형 폴더가 있고, 그 안에 실제 화면에 뿌려지는 `index.page.jsx` 파일이 있다.
 
+#### (1) 서비스 항목별 폴더 구분하기
+`getServerSideProps` 에서 fetch할 때 query로 각 서비스 화면에 일치하는 서비스 유형`type`을 보내고,
+Page컴포넌트에서는 이 화면이 어떤 서비스 유형 화면인지 `<div>`에 나타낸다.
 
+**index.page.jsx**
+``` jsx
+import { useRecoilValue } from 'recoil';
+
+import { servicesAtom } from '@modules/service/atom';
+import { findServices } from '@modules/service/fetch';
+
+// 서버에서 실행되는 코드
+export const getServerSideProps = async data => {
+  const { query } = data;
+
+  // ... -> Spread 문법을 사용하여 query안의 페이징 정보와 다른 쿼리를 같이 보낸다.
+  // {} 안에 query를 그냥 사용하게 되면, query: {} 형태로 객체 자체가 value로 들어간다.
+  const services = await findServices({ ...query, type: 'NURSING' });
+
+  return {
+    props: {
+      initialData: {
+        [servicesAtom.key]: services,
+      },
+    },
+  };
+};
+
+// 클라이언트에서 실행되는 코드
+const Page = () => {
+  const services = useRecoilValue(servicesAtom);
+
+  return <div>NURSING 페이지</div>;
+};
+
+export default Page;
+
+```
+
+#### (2) 폴더 하나, 파일 하나로 관리하기
+
+서비스 항목마다 
+ 
 ```
 src
 ㄴ pages
 	ㄴ services
 		ㄴ nursing
+			ㄴ `index.page.jsx`
 		ㄴ recognition
+			ㄴ `index.page.jsx`
 		ㄴ recuperation
+			ㄴ `index.page.jsx`
 		ㄴ leisure
+			ㄴ `index.page.jsx`
 		ㄴ emotion
+			ㄴ `index.page.jsx`
 		ㄴ family
 			ㄴ `index.page.jsx`
 	ㄴ `_app.pages.jsx`
