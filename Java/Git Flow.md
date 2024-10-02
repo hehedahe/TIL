@@ -1,42 +1,39 @@
----
-tags:
-  - git
----
-***
+tags: #git
 
+---
 
-$ git clone -b <branchname> <remote-repo-url>
+$ git clone -b `branchname` `remote-repo-url`
 $ git flow init  → 쭉 엔터
 
 작업 시작
-$ git flow feature start ISSUE-번호
+**_$ git flow feature startISSUE-번호_**
 
 작업 후 
-$ git add .
-$ git commit -m ‘이슈번호 blabla..’
-
-$ git checkout develop
-$ git pull origin develop 
+**$ git add .**
+**$ git commit -m ‘이슈번호 blabla..’**
+**_$ git checkout develop_**
+**_$ git pull origin develop_**
 
 → Already up to date : 내 feature가 최신일 경우 
-$ git checkout feature/ISSUE-번호 
-$ git flow feature finish ISSUE-번호 
-$ git push origin devleop
+***$ git checkout feature/***ISSUE-번호
+***$ git flow feature finish*** ISSUE-번호 
+***$ git push origin develop***
 
 → pull 왕창 받음!
-$ git checkout feature/ISSUE-번호
-$ git rebase develop
+**_$ git checkout feature/ISSUE-번호_**
+**_$ git rebase develop_**
  
 rebase 후 conflict 발생 시 conflict 수정 
 $ git add .
 $ git commit -m ‘blabla…’
-$ git rebase --continue
+***$ git rebase --continue***
 
 rebase OR conflict 수정 후
-$ git flow feature finish ISSUE번호
-$ git push origin develop
+***$ git flow feature finish ISSUE번호***
+***$ git push origin develop***
 
-===========================================
+
+---
 
 작업 브랜치 생성
 git branch ISSUE-xx
