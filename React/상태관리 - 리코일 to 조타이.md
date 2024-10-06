@@ -21,3 +21,27 @@ index.page.jsx에서 getServerSideProps에서 파라미터로 받는 data와는 
 [next.js pages Router API](https://nextjs.org/docs/pages/building-your-application/rendering)
 
 
+atom이 흘러가는 플로우
+1. index.page.jsx 에서 getServerSideProps에서 백서버에 API 호출하여 값을 받아 props의 initialData로 atomMapKey에 넣어 리턴한다.
+2. \_app.page.jsx에서 pageProps로 받아 jotaiHydrator에 initialData(구조분해할당)를 넘긴다.
+   ``` js
+initialData >>> {
+  notice__noticesAtom: { // atom.js에서 정의한 key값
+    total: 28,
+    count: 0,
+    limit: 15,
+    offset: 0,
+    items: [
+      [Object], [Object],
+      [Object], [Object],
+      [Object], [Object],
+      [Object], [Object],
+      [Object], [Object],
+      [Object], [Object],
+      [Object], [Object],
+      [Object]
+    ]
+  }
+}
+```
+4. atomMap.js에서 initialData를 받아 atom.js에서 jotai로 만든 atom(defaultList) 리턴한다.
