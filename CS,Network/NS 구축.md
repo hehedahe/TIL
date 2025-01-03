@@ -27,9 +27,6 @@
   
 
 - **구성**:
-
-  
-
 - named.conf
 
 - Zone Files
