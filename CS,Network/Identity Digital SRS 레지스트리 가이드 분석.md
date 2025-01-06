@@ -105,7 +105,9 @@ Page 22 ~ 31의 그림을 참고해볼 것
 
 
 ### EPP Domain Status
-참고: [RFC 5731](https://datatracker.ietf.org/doc/html/rfc5731#autoid-7)
+  
+참고: [RFC 5731](https://datatracker.ietf.org/doc/html/rfc5731#autoid-7)  
+
 도메인 객체는 적어도 하나의 연관된 상태를 가져야만 한다.  
   
 클라이언트가 추가하거나 제거할 수 있는 상태값은 `client`로 시작한다.
@@ -114,11 +116,13 @@ Page 22 ~ 31의 그림을 참고해볼 것
 
 #### Status 종류
 
-- `ok`: 펜딩 과정이나 금지 상태가 아닌 일반적인 상태값이다. 이 상태는 다른 상태 값들이 추가되거나 삭제될 때 서버에 의해 제거되거나 적용될 수 있다.
+- `ok`: 보류나 제한 상태가 아닌 일반적인 상태값이다. 이 상태는 다른 상태 값들이 추가되거나 삭제될 때 서버에 의해 제거되거나 적용될 수 있다.
 - `inactive`: 도메인 위임 정보가 연결되어 있지 않다. 이 상태는 도메인이 처음 생성될 때 디폴트 상태이고, DNS 위임을 위한 호스트 객체가 없을 때 적용된다. 또한, 모든 호스트 객체 연결이 제거될 때 서버가 설정할 수 있다.
 - `pendingCreate`, `pendingDelete`, `pendingRenew`, `pendingTransfer`, `pendingUpdate`: 도메인 객체에 대한 변환 명령이 처리되었지만, 서버에서 작업이 아직 완료되지 않은 상태이다. 서버 운영자는 다양한 이유로 완료를 지연시킬 수 있다. 예를 들어, 인간?검토나 제3자의 작업을 허용하기 위함 등이 있다. 
   처리되었지만 요청된 작업이 펜딩 중인 변환 명령은 응답코드 **1001**로 표시된다. 
   요청 작업이 완료되면 해당 상태 값은 반드시 제거되어야 한다. 트랜잭션에 관련된 모든 클라이언트들은 서비스 메세지를 사용해 작업이 완료되었고 도메인 상태가 변경되었음을 안내 받아야 한다.  
+
+아래는 제한 상태들이다.
 - `clientDeleteProhibited`, `serverDeleteProhibited`: 도메인 삭제 요청이 거절되어야 한다.
 - `clientHold`, `serverHold`: DNS 위임 정보는 공개되어서는 안된다.
 - `clientRenewProhibited`, `serverRenewProhibited`: 도메인 갱신 요청이 거절되어야 한다.
@@ -129,12 +133,65 @@ Page 22 ~ 31의 그림을 참고해볼 것
 
 다음은 결합이 불가능한 상태들의 설명이다. 명시적으로 금지되지않은 조합은 사용 가능하다.  
 
-- `ok`는 다른 어떤 상태와도 결합 불가
-- `pendingCreate`, `pendingDelete`, `pendingRenew`, `pendingTransfer`, `pendingUpdate`는 서로 결합될 수 없다.
-- `pendingDelete` ⇠⇢ `clientDeleteProhibited`, `serverDeleteProhibited`
-- `pendingRenew` ⇠⇢ `clientRenewProhibited`, `serverRenewProhibited`
-- `pendingTransfer` ⇠⇢ `clientTransferProhibited`, `serverTransferProhibited`
-- `pendingUpdate` ⇠⇢ `clientUpdateProhibited`, `serverUpdateProhibited`
+![](https://i.imgur.com/IaCeLh0.png)
+
+
+### EPP Host Status
+  
+참고: [RFC 5732](https://datatracker.ietf.org/doc/html/rfc5732#autoid-7)  
+
+호스트 객체는 적어도 하나의 연관된 상태를 가져야만 한다.  
+  
+상태값은 호스트 객체를 후원하는 클라이언트와 객체가 위치한 서버에서만 설정할 수 있다.
+클라이언트는 EPP `<update>`명령을 사용하여 호스트 객체의 상태를 변경할 수 있다. 하지만 서버에서 설정한 상태는 변경할 수 없다. 
+서버는 로컬 서버 정책에 따라 클라이언트가 설정한 상태를 변경하거나 재정의할 수 있다. 호스트 상태는 클라이언트가 시작한 변환 명령이나 서버 운영자가 수행한 작업의 결과로 변경될 수 있다.
+
+#### Status 종류
+
+- `linked`: 호스트 객체는 도메인 객체와 같은 또 다른 객체와 적어도 하나의 활성된 연결을 가지고 있다.
+- `ok`: 보류중인 작업이거나 제한이 없는 호스트 객체에 대한 일반적인 상태이다. 이 상태 값은 다른 상태들이 추가되거나 삭제될 때 서버에 의해 설정되거나 삭제된다.
+- `pendingCreate`, `pendingDelete`, `pendingTransfer`, `pendingUpdate`: 객체에 대한 변환 명령이 처리되었거나 또는 호스트 객체의 상위 도메인 객체에 대해 `<transfer>` 명령이 처리되었지만, 서버에서 작업이 아직 완료되지 않은 상태이다. 서버 운영자는 다양한 이유로 완료를 지연시킬 수 있다. 예를 들어, 인간?검토나 제3자의 작업을 허용하기 위함 등이 있다. 
+  처리되었지만 요청된 작업이 펜딩 중인 변환 명령은 응답코드 **1001**로 표시된다. 
+  요청 작업이 완료되면 해당 상태 값은 반드시 제거되어야 한다. 트랜잭션에 관련된 모든 클라이언트들은 서비스 메세지를 사용해 작업이 완료되었고 도메인 상태가 변경되었음을 안내 받아야 한다.  
+- `clientDeleteProhibited`, `serverDeleteProhibited`: 호스트 삭제 요청이 거절되어야 한다.
+- `clientUpdateProhibited`, `serverUpdateProhibited`: ← 이 상태를 제거하는 것은 제외하고 호스트 업데이트 요청이 거절되어야 한다.  
+  
+#### 상태 별 결합
+
+다음은 상태 결합에 대한 케이스이다. EPP 도메인 상태와 같이 명시적으로 금지되지않은 조합은 사용 가능하다.  
+
+![](https://i.imgur.com/yp61PGR.png)
+  
+  
+  
+### EPP Contact Status
+  
+참고: [RFC 5733](https://datatracker.ietf.org/doc/html/rfc5733#autoid-5)  
+
+컨택트 객체는 적어도 하나의 연관된 상태를 가져야만 한다.  
+  
+상태값은 호스트 객체를 후원하는 클라이언트와 객체가 위치한 서버에서만 설정할 수 있다.
+클라이언트는 EPP `<update>`명령을 사용하여 호스트 객체의 상태를 변경할 수 있다.
+서버에서 설정한 상태는 변경할 수 없다.  서버는 로컬 서버 정책에 따라 클라이언트가 설정한 상태를 변경하거나 재정의할 수 있다. 호스트 상태는 클라이언트가 시작한 변환 명령이나 서버 운영자가 수행한 작업의 결과로 변경될 수 있다.  
+  
+클라이언트가 추가하거나 제거할 수 있는 상태값은 `client`로 시작한다.
+서버가 추가하거나 제거할 수 있는 상태값은 `server`로 시작하거나  `client`나 server로 시작하지 않는 상태값은 서버에서 관리한다.
+클라이언트는 서버에서 설정한 상태 값을 변경해서는 안된다. 
+
+#### Status 종류
+
+또 다른 객체와 적어도 하나의 활성된 연결을 가지고 있다.
+- `ok`: 보류중인 작업이거나 제한이 없는 호스트 객체에 대한 일반적인 상태이다. 이 상태 값은 다른 상태들이 추가되거나 삭제될 때 서버에 의해 설정되거나 삭제된다.
+- `pendingCreate`, `pendingDelete`, `pendingTransfer`, `pendingUpdate`: 객체에 대한 변환 명령이 처리되었거나 또는 호스트 객체의 상위 도메인 객체에 대해 `<transfer>` 명령이 처리되었지만, 서버에서 작업이 아직 완료되지 않은 상태이다. 서버 운영자는 다양한 이유로 완료를 지연시킬 수 있다. 예를 들어, 인간?검토나 제3자의 작업을 허용하기 위함 등이 있다. 
+  처리되었지만 요청된 작업이 펜딩 중인 변환 명령은 응답코드 **1001**로 표시된다. 
+  요청 작업이 완료되면 해당 상태 값은 반드시 제거되어야 한다. 트랜잭션에 관련된 모든 클라이언트들은 서비스 메세지를 사용해 작업이 완료되었고 도메인 상태가 변경되었음을 안내 받아야 한다.  
+- `clientDeleteProhibited`, `serverDeleteProhibited`: 호스트 삭제 요청이 거절되어야 한다.
+- `clientUpdateProhibited`, `serverUpdateProhibited`: ← 이 상태를 제거하는 것은 제외하고 호스트 업데이트 요청이 거절되어야 한다.  
+  
+#### 상태 별 결합
+
+다음은 상태 결합에 대한 케이스이다. EPP 도메인 상태와 같이 명시적으로 금지되지않은 조합은 사용 가능하다.  
+
 
 
 ---
