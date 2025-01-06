@@ -90,35 +90,33 @@
   
 
 ---
-
-  
-
 ## **3 TLD Status**
 
-  
-
-![도메인 등록 생애주기](./lifecycle.png)
-
-  
-
+![](https://i.imgur.com/cVo5xUI.png)
+도메인 생애주기
 ### **3.1 TLD Process**
 
-  
-
 - Check domain
-
 - Create domain
-
 - Renew domain
-
 - Transfer domain
-
 - Delete domain
-
-  
-
 Page 22 ~ 31의 그림을 참고해볼 것
 
+
+### Status
+도메인 객체는 적어도 하나의 연관된 상태를 가져야만 한다.  
+  
+클라이언트가 추가하거나 제거할 수 있는 상태값은 `client`로 시작한다.
+서버가 추가하거나 제거할 수 있는 상태값은 `server`로 시작하거나  `client`나 server로 시작하지 않는 상태값은 서버에서 관리한다.
+클라이언트는 서버에서 설정한 상태 값을 변경해서는 안된다. 
+
+- `clientDelteProhibited`, `serverDeleteProhibited`: 도메인 삭제 요청이 거절되어야 한다.
+- `clientHold`, `serverHold`: DNS 위임 정보는 공개되어서는 안된다.
+- `clientRenewProhibited`, `serverRenewProhibited`: 도메인 갱신 요청이 거절되어야 한다.
+- `clientTransferProhibited`, `serverTransferProhibited`: 도메인 이전 요청이 거절되어야 한다.
+- `clientUpdateProhibited`, `serverUpdateProhibited`: ← 이 상태를 제거하려는 것은 제외하고 도메인 업데이트 요청이 거절되어야 한다.
+- `inactive`: 도메인 위임 정보가 연결되어 있지 않다. 이 상태는 도메인이 처음 생성되었을 때 디폴트이다.
   
 
 ---
