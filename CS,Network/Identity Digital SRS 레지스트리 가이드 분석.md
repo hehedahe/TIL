@@ -104,20 +104,38 @@
 Page 22 ~ 31의 그림을 참고해볼 것
 
 
-### Status
+### EPP Domain Status
+참고: [RFC 5731](https://datatracker.ietf.org/doc/html/rfc5731#autoid-7)
 도메인 객체는 적어도 하나의 연관된 상태를 가져야만 한다.  
   
 클라이언트가 추가하거나 제거할 수 있는 상태값은 `client`로 시작한다.
 서버가 추가하거나 제거할 수 있는 상태값은 `server`로 시작하거나  `client`나 server로 시작하지 않는 상태값은 서버에서 관리한다.
 클라이언트는 서버에서 설정한 상태 값을 변경해서는 안된다. 
 
-- `clientDelteProhibited`, `serverDeleteProhibited`: 도메인 삭제 요청이 거절되어야 한다.
+#### Status 종류
+
+- `ok`: 펜딩 과정이나 금지 상태가 아닌 일반적인 상태값이다. 이 상태는 다른 상태 값들이 추가되거나 삭제될 때 서버에 의해 제거되거나 적용될 수 있다.
+- `inactive`: 도메인 위임 정보가 연결되어 있지 않다. 이 상태는 도메인이 처음 생성될 때 디폴트 상태이고, DNS 위임을 위한 호스트 객체가 없을 때 적용된다. 또한, 모든 호스트 객체 연결이 제거될 때 서버가 설정할 수 있다.
+- `pendingCreate`, `pendingDelete`, `pendingRenew`, `pendingTransfer`, `pendingUpdate`: 도메인 객체에 대한 변환 명령이 처리되었지만, 서버에서 작업이 아직 완료되지 않은 상태이다. 서버 운영자는 다양한 이유로 완료를 지연시킬 수 있다. 예를 들어, 인간?검토나 제3자의 작업을 허용하기 위함 등이 있다. 
+  처리되었지만 요청된 작업이 펜딩 중인 변환 명령은 응답코드 **1001**로 표시된다. 
+  요청 작업이 완료되면 해당 상태 값은 반드시 제거되어야 한다. 트랜잭션에 관련된 모든 클라이언트들은 서비스 메세지를 사용해 작업이 완료되었고 도메인 상태가 변경되었음을 안내 받아야 한다.  
+- `clientDeleteProhibited`, `serverDeleteProhibited`: 도메인 삭제 요청이 거절되어야 한다.
 - `clientHold`, `serverHold`: DNS 위임 정보는 공개되어서는 안된다.
 - `clientRenewProhibited`, `serverRenewProhibited`: 도메인 갱신 요청이 거절되어야 한다.
 - `clientTransferProhibited`, `serverTransferProhibited`: 도메인 이전 요청이 거절되어야 한다.
 - `clientUpdateProhibited`, `serverUpdateProhibited`: ← 이 상태를 제거하려는 것은 제외하고 도메인 업데이트 요청이 거절되어야 한다.
-- `inactive`: 도메인 위임 정보가 연결되어 있지 않다. 이 상태는 도메인이 처음 생성되었을 때 디폴트이다.
-  
+
+#### 결합이 불가능한 상태 조합
+
+다음은 결합이 불가능한 상태들의 설명이다. 명시적으로 금지되지않은 조합은 사용 가능하다.  
+
+- `ok`는 다른 어떤 상태와도 결합 불가
+- `pendingCreate`, `pendingDelete`, `pendingRenew`, `pendingTransfer`, `pendingUpdate`는 서로 결합될 수 없다.
+- `pendingDelete` ⇠⇢ `clientDeleteProhibited`, `serverDeleteProhibited`
+- `pendingRenew` ⇠⇢ `clientRenewProhibited`, `serverRenewProhibited`
+- `pendingTransfer` ⇠⇢ `clientTransferProhibited`, `serverTransferProhibited`
+- `pendingUpdate` ⇠⇢ `clientUpdateProhibited`, `serverUpdateProhibited`
+
 
 ---
 ## **4 Registry Grace Periods(유예 기간)**
