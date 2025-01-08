@@ -12,8 +12,8 @@
    SNS로그인도 가능하다. 일반 회원가입을 진행하려고 하면 이용이 불가능한 지역이라고 나오는데 왜 그러는거야 ,,,
 
 여기까지 했으면 imgur 플러그인 설정에서 위에서 가입한 계정을 연동해야 imgur 서버에 업로드할 수 있다.
-그럼 옵시디언에서 imgur 서버에 업로드된 이미지 url(아래처럼!)을 사용하여 쉽게 이미지를 관리할 수 있다.
-https://i.imgur.com/파일이름
+그럼 옵시디언에서 imgur 서버에 업로드된 이미지 url(형식: https://i.imgur.com/파일이름.확장자)을 사용하여 쉽게 이미지를 관리할 수 있다.
+
 
 ###### imgur 계정 연동하는 방법 
 1. 설정 - `imgur` - Images upload approach 를 `Authenticated Imgur upload` 로 변경한다.
