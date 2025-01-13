@@ -7,19 +7,12 @@
 - `<epp></epp>`: 이 태그 안에 EPP 명령문
 
 ``` xml
-
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-
 <epp xmlns="urn:ietf:params:xml:ns:epp-1.0">
-
 <command>
-
 ...valid EPP commands..
-
 </command>
-
 </epp>
-
 ```
 
 ### **2.10 EPP 명령문**
